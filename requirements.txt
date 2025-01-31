@@ -3,6 +3,5 @@
 # otherwise, oTree will automatically overwrite it.
 otree>=5.10.3
 psycopg2>=2.8.4
-python-constraint>=3.10.0,<3.11.0
 
 # Add other dependencies if needed
