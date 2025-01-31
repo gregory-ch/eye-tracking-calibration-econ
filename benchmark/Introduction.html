@@ -1,5 +1,5 @@
 {{ block title }}
-    Round {{ round_number }} of {{ Constants.num_rounds }}
+  
 {{ endblock }}
 
 {{ block content }}
@@ -9,7 +9,7 @@
         <div class="col-md-8">
             <div class="card">
                 <div class="card-body">
-                    <h4 class="card-title mb-4">Round {{ round_number }} Instructions</h4>
+                    <h4 class="card-title mb-4">Round {{ round_number }} of {{ Constants.num_rounds }}</h4>
                     
                     <p>In this round:</p>
                     <ul>
@@ -32,6 +32,7 @@
             </div>
         </div>
     </div>
+    <div class="row justify-content-center">Next screen first will be gaze calibration, follow the blue cross</div>
 </div>
 
 {{ endblock }}

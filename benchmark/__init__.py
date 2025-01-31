@@ -16,17 +16,17 @@ class Constants(BaseConstants):
 
     # Matrix 1
     matrix_1 = {
-        'I': {  # dash line (coordination)
+        'I': { 
             'left': {'row': 28, 'col': 49},
             'middle': {'row': 78, 'col': 67},
             'right': {'row': 43, 'col': 75}
         },
-        'II': {  # solid line (naive)
+        'II': { 
             'left': {'row': 60, 'col': 27},
             'middle': {'row': 22, 'col': 21},
             'right': {'row': 68, 'col': 38}
         },
-        'III': {  # no line (nash)
+        'III': { 
             'left': {'row': 82, 'col': 33},
             'middle': {'row': 73, 'col': 41},
             'right': {'row': 35, 'col': 78}
@@ -35,17 +35,17 @@ class Constants(BaseConstants):
 
     # Matrix 2
     matrix_2 = {
-        'I': {  # no line (nash)
+        'I': {  
             'left': {'row': 82, 'col': 68},
             'middle': {'row': 33, 'col': 47},
             'right': {'row': 41, 'col': 76}
         },
-        'II': {  # dash line (coordination)
+        'II': {  
             'left': {'row': 67, 'col': 40},
             'middle': {'row': 79, 'col': 33},
             'right': {'row': 39, 'col': 84}
         },
-        'III': {  # solid line (naive)
+        'III': {  
             'left': {'row': 17, 'col': 19},
             'middle': {'row': 57, 'col': 29},
             'right': {'row': 65, 'col': 40}
@@ -54,17 +54,17 @@ class Constants(BaseConstants):
 
     # Matrix 3
     matrix_3 = {
-        'I': {  # solid line (naive)
+        'I': {  
             'left': {'row': 32, 'col': 79},
             'middle': {'row': 66, 'col': 36},
             'right': {'row': 78, 'col': 29}
         },
-        'II': {  # no line (nash)
+        'II': { 
             'left': {'row': 44, 'col': 77},
             'middle': {'row': 82, 'col': 71},
             'right': {'row': 28, 'col': 52}
         },
-        'III': {  # dash line (coordination)
+        'III': { 
             'left': {'row': 63, 'col': 39},
             'middle': {'row': 21, 'col': 20},
             'right': {'row': 58, 'col': 33}
@@ -75,18 +75,18 @@ class Constants(BaseConstants):
     matrix_strategies = {
         'matrix_1': {
             'I': 'coordination',    # dash line
-            'II': 'naive',         # solid line
-            'III': 'nash'          # no line
+            'III': 'naive',         # solid line
+            'II': 'nash'          # no line
         },
         'matrix_2': {
-            'I': 'nash',           # no line
-            'II': 'coordination',   # dash line
-            'III': 'naive'         # solid line
+            'III': 'nash',           # no line
+            'I': 'coordination',   # dash line
+            'II': 'naive'         # solid line
         },
         'matrix_3': {
             'I': 'naive',          # solid line
-            'II': 'nash',          # no line
-            'III': 'coordination'   # dash line
+            'III': 'nash',          # no line
+            'II': 'coordination'   # dash line
         }
     }
 
@@ -192,6 +192,12 @@ class Introduction(Page):
         }
 
 
+class Calibration(Page):
+    @staticmethod
+    def is_displayed(player: Player):
+        return True
+
+
 class Decision(Page):
     form_model = 'player'
     form_fields = ['column', 'decision_time']
@@ -227,5 +233,5 @@ class Results(Page):
         }
 
 
-page_sequence = [Introduction, Decision, Results]
+page_sequence = [Introduction, Calibration, Decision, Results]
 
