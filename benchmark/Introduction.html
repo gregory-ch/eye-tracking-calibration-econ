@@ -1,0 +1,47 @@
+{{ block title }}
+    Round {{ round_number }} of {{ Constants.num_rounds }}
+{{ endblock }}
+
+{{ block content }}
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title mb-4">Round {{ round_number }} Instructions</h4>
+                    
+                    <p>In this round:</p>
+                    <ul>
+                        <li>You will see a 3x3 matrix with different payoffs</li>
+                        <li>{{ opponent_description }}</li>
+                        <li>You need to choose a column using arrow keys (← ↓ →)</li>
+                        <li>Press Enter to confirm your choice</li>
+                    </ul>
+
+                    <div class="alert alert-info">
+                        <strong>Note:</strong> Your payoff will be shown in blue (top right),
+                        opponent's payoff in red (bottom left).
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center mt-4">
+                <small>press Enter to continue</small>
+                <button class="otree-btn-next btn btn-primary" style="display: none;">Next</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{ endblock }}
+
+{{ block scripts }}
+<script>
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'Enter') {
+            document.querySelector('.otree-btn-next').click();
+        }
+    });
+</script>
+{{ endblock }} 

@@ -1,0 +1,191 @@
+{{ block title }}
+    Results
+{{ endblock }}
+
+{{ block content }}
+
+<div class="container">
+    <div class="row justify-content-center mb-3">
+        <div class="col text-center">
+            <div class="result-info">
+                Your choice: <span class="choice">{{ my_column }}</span> column<br>
+                Computer's choice: row <span class="choice">{{ robot_row }}</span><br>
+                Your payoff: <span class="payoff">{{ my_payoff }} points</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="matrix-container">
+                <!-- Row labels -->
+                <div class="row-labels">
+                    <div class="row-label">I</div>
+                    <div class="row-label">II</div>
+                    <div class="row-label">III</div>
+                </div>
+
+                <!-- Matrix -->
+                <div class="matrix">
+                    <!-- Top row -->
+                    <div class="matrix-row">
+                        <div class="matrix-cell{% if robot_row == 'I' and my_column == 'left' %} selected{% endif %}" data-col="left">
+                            <span class="payoff-row">{{ matrix.I.left.row }}</span>
+                            <span class="payoff-col">{{ matrix.I.left.col }}</span>
+                        </div>
+                        <div class="matrix-cell{% if robot_row == 'I' and my_column == 'middle' %} selected{% endif %}" data-col="middle">
+                            <span class="payoff-row">{{ matrix.I.middle.row }}</span>
+                            <span class="payoff-col">{{ matrix.I.middle.col }}</span>
+                        </div>
+                        <div class="matrix-cell{% if robot_row == 'I' and my_column == 'right' %} selected{% endif %}" data-col="right">
+                            <span class="payoff-row">{{ matrix.I.right.row }}</span>
+                            <span class="payoff-col">{{ matrix.I.right.col }}</span>
+                        </div>
+                    </div>
+                    <!-- Middle row -->
+                    <div class="matrix-row">
+                        <div class="matrix-cell{% if robot_row == 'II' and my_column == 'left' %} selected{% endif %}" data-col="left">
+                            <span class="payoff-row">{{ matrix.II.left.row }}</span>
+                            <span class="payoff-col">{{ matrix.II.left.col }}</span>
+                        </div>
+                        <div class="matrix-cell{% if robot_row == 'II' and my_column == 'middle' %} selected{% endif %}" data-col="middle">
+                            <span class="payoff-row">{{ matrix.II.middle.row }}</span>
+                            <span class="payoff-col">{{ matrix.II.middle.col }}</span>
+                        </div>
+                        <div class="matrix-cell{% if robot_row == 'II' and my_column == 'right' %} selected{% endif %}" data-col="right">
+                            <span class="payoff-row">{{ matrix.II.right.row }}</span>
+                            <span class="payoff-col">{{ matrix.II.right.col }}</span>
+                        </div>
+                    </div>
+                    <!-- Bottom row -->
+                    <div class="matrix-row">
+                        <div class="matrix-cell{% if robot_row == 'III' and my_column == 'left' %} selected{% endif %}" data-col="left">
+                            <span class="payoff-row">{{ matrix.III.left.row }}</span>
+                            <span class="payoff-col">{{ matrix.III.left.col }}</span>
+                        </div>
+                        <div class="matrix-cell{% if robot_row == 'III' and my_column == 'middle' %} selected{% endif %}" data-col="middle">
+                            <span class="payoff-row">{{ matrix.III.middle.row }}</span>
+                            <span class="payoff-col">{{ matrix.III.middle.col }}</span>
+                        </div>
+                        <div class="matrix-cell{% if robot_row == 'III' and my_column == 'right' %} selected{% endif %}" data-col="right">
+                            <span class="payoff-row">{{ matrix.III.right.row }}</span>
+                            <span class="payoff-col">{{ matrix.III.right.col }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="text-center mt-4">
+        <small>press Enter to continue</small>
+        <button class="otree-btn-next btn btn-primary" style="display: none;">Next</button>
+    </div>
+</div>
+
+{{ endblock }}
+
+{{ block styles }}
+<style>
+    .container {
+        margin-top: 80px;
+        max-width: 1000px;
+    }
+
+    .result-info {
+        text-align: center;
+        font-size: 20px;
+        line-height: 1.8;
+        background: #f8f9fa;
+        padding: 20px;
+        border-radius: 8px;
+        margin-bottom: 40px;
+    }
+
+    .choice {
+        color: #0d6efd;
+        font-weight: bold;
+    }
+
+    .payoff {
+        color: #0d6efd;
+        font-weight: bold;
+    }
+
+    .matrix-container {
+        display: flex;
+        gap: 15px;
+        padding: 20px;
+        background: #f8f9fa;
+        border-radius: 8px;
+    }
+
+    .row-labels {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-around;
+        width: 40px;
+    }
+
+    .row-label {
+        font-weight: bold;
+        font-size: 24px;
+        height: 180px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .matrix {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .matrix-row {
+        display: flex;
+        gap: 15px;
+    }
+
+    .matrix-cell {
+        width: 180px;
+        height: 180px;
+        border: 3px solid #dee2e6;
+        background: white;
+        border-radius: 6px;
+        position: relative;
+    }
+
+    .matrix-cell.selected {
+        border-color: #0d6efd;
+    }
+
+    .payoff-row {
+        position: absolute;
+        bottom: 15px;
+        left: 15px;
+        font-size: 26px;
+        color: #dc3545;  /* Bootstrap красный */
+    }
+
+    .payoff-col {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        font-size: 26px;
+        color: #0d6efd;  /* Bootstrap синий */
+    }
+</style>
+{{ endblock }}
+
+{{ block scripts }}
+<script>
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'Enter') {
+            document.querySelector('.otree-btn-next').click();
+        }
+    });
+</script>
+{{ endblock }}
+
+

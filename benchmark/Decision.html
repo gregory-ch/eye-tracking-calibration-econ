@@ -1,0 +1,207 @@
+{{ block title }}
+{{ endblock }}
+
+{{ block content }}
+
+<div class="container">
+    <!-- Hidden inputs -->
+    <form id="form">
+        <input type="hidden" name="column" id="id_column">
+        <input type="hidden" name="decision_time" id="id_decision_time">
+    </form>
+
+    <div class="row justify-content-center" style="margin-bottom: 60px;">
+        <div class="col text-center">
+            <small>column ← ↓ → | enter to submit</small>
+        </div>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="matrix-container">
+                <!-- Row labels -->
+                <div class="row-labels">
+                    <div class="row-label">I</div>
+                    <div class="row-label">II</div>
+                    <div class="row-label">III</div>
+                </div>
+
+                <!-- Matrix -->
+                <div class="matrix">
+                    <!-- Top row -->
+                    <div class="matrix-row">
+                        <div class="matrix-cell" data-col="left">
+                            <span class="payoff-row">{{ matrix.I.left.row }}</span>
+                            <span class="payoff-col">{{ matrix.I.left.col }}</span>
+                        </div>
+                        <div class="matrix-cell" data-col="middle">
+                            <span class="payoff-row">{{ matrix.I.middle.row }}</span>
+                            <span class="payoff-col">{{ matrix.I.middle.col }}</span>
+                        </div>
+                        <div class="matrix-cell" data-col="right">
+                            <span class="payoff-row">{{ matrix.I.right.row }}</span>
+                            <span class="payoff-col">{{ matrix.I.right.col }}</span>
+                        </div>
+                    </div>
+                    <!-- Middle row -->
+                    <div class="matrix-row">
+                        <div class="matrix-cell" data-col="left">
+                            <span class="payoff-row">{{ matrix.II.left.row }}</span>
+                            <span class="payoff-col">{{ matrix.II.left.col }}</span>
+                        </div>
+                        <div class="matrix-cell" data-col="middle">
+                            <span class="payoff-row">{{ matrix.II.middle.row }}</span>
+                            <span class="payoff-col">{{ matrix.II.middle.col }}</span>
+                        </div>
+                        <div class="matrix-cell" data-col="right">
+                            <span class="payoff-row">{{ matrix.II.right.row }}</span>
+                            <span class="payoff-col">{{ matrix.II.right.col }}</span>
+                        </div>
+                    </div>
+                    <!-- Bottom row -->
+                    <div class="matrix-row">
+                        <div class="matrix-cell" data-col="left">
+                            <span class="payoff-row">{{ matrix.III.left.row }}</span>
+                            <span class="payoff-col">{{ matrix.III.left.col }}</span>
+                        </div>
+                        <div class="matrix-cell" data-col="middle">
+                            <span class="payoff-row">{{ matrix.III.middle.row }}</span>
+                            <span class="payoff-col">{{ matrix.III.middle.col }}</span>
+                        </div>
+                        <div class="matrix-cell" data-col="right">
+                            <span class="payoff-row">{{ matrix.III.right.row }}</span>
+                            <span class="payoff-col">{{ matrix.III.right.col }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{ endblock }}
+
+{{ block styles }}
+<style>
+    .container {
+        margin-top: 80px;
+        max-width: 1000px;
+    }
+
+    .matrix-container {
+        display: flex;
+        gap: 15px;
+        padding: 20px;
+        background: #f8f9fa;
+        border-radius: 8px;
+    }
+
+    .row-labels {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-around;
+        width: 40px;
+    }
+
+    .row-label {
+        font-weight: bold;
+        font-size: 24px;
+        height: 180px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .matrix {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .matrix-row {
+        display: flex;
+        gap: 15px;
+    }
+
+    .matrix-cell {
+        width: 180px;
+        height: 180px;
+        border: 3px solid #dee2e6;
+        background: white;
+        border-radius: 6px;
+        position: relative;
+    }
+
+    .matrix-cell.selected {
+        border-color: #0d6efd;
+    }
+
+    .payoff-row {
+        position: absolute;
+        bottom: 15px;
+        left: 15px;
+        font-size: 26px;
+        color: #dc3545;  /* Bootstrap красный */
+    }
+
+    .payoff-col {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        font-size: 26px;
+        color: #0d6efd;  /* Bootstrap синий */
+    }
+
+    small {
+        color: #6c757d;
+        font-size: 16px;
+    }
+</style>
+{{ endblock }}
+
+{{ block scripts }}
+<script>
+    let startTime = performance.now();
+    let selectedColumn = null;
+    const columns = ['left', 'middle', 'right'];
+
+    function selectColumn(column) {
+        // Remove previous selection
+        document.querySelectorAll('.matrix-cell').forEach(cell => {
+            cell.classList.remove('selected');
+        });
+
+        // Add selection to clicked column
+        document.querySelectorAll(`[data-col="${column}"]`).forEach(cell => {
+            cell.classList.add('selected');
+        });
+
+        // Update hidden form fields
+        document.getElementById('id_column').value = column;
+        document.getElementById('id_decision_time').value = 
+            (performance.now() - startTime) / 1000;
+
+        selectedColumn = column;
+    }
+
+    document.addEventListener('keydown', function(event) {
+        switch(event.key) {
+            case 'ArrowLeft':
+                selectColumn('left');
+                break;
+            case 'ArrowRight':
+                selectColumn('right');
+                break;
+            case 'ArrowDown':
+                selectColumn('middle');
+                break;
+            case 'Enter':
+                if (selectedColumn) {
+                    document.getElementById('form').submit();
+                }
+                break;
+        }
+        event.preventDefault();  // Prevent page scrolling
+    });
+</script>
+{{ endblock }} 
