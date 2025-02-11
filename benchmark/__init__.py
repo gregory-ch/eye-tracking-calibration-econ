@@ -98,6 +98,16 @@ class Constants(BaseConstants):
         'nash': "Your opponent follows Nash strategy"
     }
 
+    @staticmethod
+    def calculate_ppd(resolution, width, distance):
+        """Calculate Pixels Per Degree"""
+        return ((resolution/width) * 3.14) / 180 * distance
+    
+    @staticmethod
+    def calculate_error_radius(ppd):
+        """Calculate error radius in pixels"""
+        return 2 * ppd
+
 
 class Subsession(BaseSubsession):
     pass
@@ -196,6 +206,21 @@ class Calibration(Page):
     @staticmethod
     def is_displayed(player: Player):
         return True
+
+    @staticmethod
+    def vars_for_template(player: Player):
+        # Calculate PPD and error radius
+        ppd = Constants.calculate_ppd(
+            player.session.config['screen_resolution'],
+            player.session.config['screen_width'],
+            player.session.config['eye_distance']
+        )
+        error_radius = Constants.calculate_error_radius(ppd)
+        
+        return {
+            'error_show': player.session.config['error_show'],
+            'error_radius': error_radius
+        }
 
 
 class Decision(Page):
