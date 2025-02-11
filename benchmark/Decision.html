@@ -179,7 +179,7 @@
         // Update hidden form fields
         document.getElementById('id_column').value = column;
         document.getElementById('id_decision_time').value = 
-            (performance.now() - startTime) / 1000;
+            ((performance.now() - startTime) / 1000).toFixed(3);
 
         selectedColumn = column;
     }
