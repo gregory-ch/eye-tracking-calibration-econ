@@ -62,19 +62,22 @@
 
     .cross-container {
         position: absolute;
-        display: flex;
-        justify-content: center;
-        align-items: center;
+        width: 60px;  /* Match font size */
+        height: 60px; /* Match font size */
     }
 
     .cross {
-        position: relative;  /* Changed from absolute */
+        position: absolute;
+        left: 50%;
+        top: 42.5%;  /* Changed from 50% to 45% to move up */
+        transform: translate(-50%, 0);  /* Only horizontal centering */
         font-size: 60px;
         font-weight: bold;
         color: #dee2e6;
         transition: color 0.3s;
         cursor: default;
         user-select: none;
+        line-height: 0;
     }
 
     .cross.active {
@@ -112,12 +115,12 @@
 
     .error-circle {
         position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
         border: 2px solid #f8f9fa;
         border-radius: 50%;
         pointer-events: none;
-        transform: translate(-50%, -50%);  /* Center the circle */
-        left: 50%;
-        top: 50%;
     }
 
     /* Position containers at corners */
