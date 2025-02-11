@@ -52,7 +52,7 @@ SESSION_CONFIG_DEFAULTS = dict(
     ),
 )
 
-PARTICIPANT_FIELDS = []
+PARTICIPANT_FIELDS = ['opponent_strategies']
 SESSION_FIELDS = []
 
 # ISO-639 code
@@ -81,3 +81,6 @@ ROOMS = [
         participant_label_file='_rooms/eye_tracking_lab.txt',
     ),
 ]
+
+# Add this to prevent database issues
+EXTENSION_APPS = []
