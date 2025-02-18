@@ -1,0 +1,58 @@
+{{ block title }}
+Welcome
+{{ endblock }}
+
+{{ block content }}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card mt-5">
+                <div class="card-body">
+                    <h4 class="card-title mb-4">Game Instructions</h4>
+
+                    <h5 class="mb-3">Game Structure</h5>
+                    <p>The game consists of two screens:</p>
+                    <ul>
+                        <li>First screen: Shows history of previous decisions</li>
+                        <li>Second screen: Shows the same history plus a signal (red or blue ball)</li>
+                    </ul>
+
+                    <h5 class="mb-3">Controls</h5>
+                    <ul>
+                        <li>Use ← and → arrow keys to adjust your value</li>
+                        <li>Hold arrows for faster adjustment</li>
+                        <li>Press Enter to confirm your decision</li>
+                        <li>Hold ↓ to view detailed instructions at any time</li>
+                    </ul>
+
+                    <h5 class="mb-3">Decision Process</h5>
+                    <ul>
+                        <li>Make your first decision based on the history</li>
+                        <li>On the second screen, you'll see:
+                            <ul>
+                                <li>Your first decision (top-left corner)</li>
+                                <li>A signal ball (last cell)</li>
+                                <li>You can make your final decision</li>
+                            </ul>
+                        </li>
+                    </ul>
+
+                    <div class="text-center mt-4">
+                        <p class="text-muted">Press Enter to start</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{{ endblock }}
+
+{{ block scripts }}
+<script>
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'Enter') {
+            document.getElementById('form').submit();
+        }
+    });
+</script>
+{{ endblock }} 

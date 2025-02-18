@@ -12,6 +12,16 @@ SESSION_CONFIGS = [
         screen_width=531,
         eye_distance=700,
     ),
+    dict(
+        name='interface_test',
+        display_name='Interface Test',
+        app_sequence=['interface_test'],
+        num_demo_participants=1,
+        error_show=True,
+        screen_resolution=1920,
+        screen_width=531,
+        eye_distance=700,
+    ),
 ]
 
 # if you set a property in SESSION_CONFIG_DEFAULTS, it will be inherited by all configs
@@ -23,36 +33,20 @@ SESSION_CONFIG_DEFAULTS = dict(
     real_world_currency_per_point=1.00,
     participation_fee=0.00,
     doc="",
-    # Calibration settings with descriptions
-    error_show=dict(
-        doc="Show error radius circles during calibration",
-        initial=True,
-        type='boolean'
-    ),
-    screen_resolution=dict(
-        doc="Screen horizontal resolution in pixels",
-        initial=1920,
-        type='integer',
-        min=800,
-        max=3840
-    ),
-    screen_width=dict(
-        doc="Screen width in millimeters",
-        initial=531,
-        type='integer',
-        min=200,
-        max=1000
-    ),
-    eye_distance=dict(
-        doc="Distance from eyes to screen in millimeters",
-        initial=700,
-        type='integer',
-        min=300,
-        max=1000
-    ),
+    # Calibration settings
+    error_show=True,
+    screen_resolution=1920,
+    screen_width=531,
+    eye_distance=700,
 )
 
-PARTICIPANT_FIELDS = ['opponent_strategies']
+PARTICIPANT_FIELDS = [
+    'opponent_strategies',
+    'random_number',
+    'asset_value',
+    'binary_sequence',
+    'value_sequence'
+]
 SESSION_FIELDS = []
 
 # ISO-639 code
@@ -78,7 +72,10 @@ ROOMS = [
     dict(
         name='eye_tracking_lab',
         display_name='Eye Tracking Laboratory',
-        participant_label_file='_rooms/eye_tracking_lab.txt',
+    ),
+    dict(
+        name='interface_test',
+        display_name='Interface Test',
     ),
 ]
 

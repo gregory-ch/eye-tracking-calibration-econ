@@ -1,0 +1,185 @@
+{{ block title }}
+{{ endblock }}
+
+{{ block content }}
+<div class="container">
+    <div class="calibration-container">
+        <div class="cross-container top-left">
+            <div class="cross" id="cross1">+</div>
+            {% if error_show %}
+            <div class="error-circle" style="width: {{ error_radius }}px; height: {{ error_radius }}px;"></div>
+            {% endif %}
+        </div>
+        <div class="cross-container top-right">
+            <div class="cross" id="cross2">+</div>
+            {% if error_show %}
+            <div class="error-circle" style="width: {{ error_radius }}px; height: {{ error_radius }}px;"></div>
+            {% endif %}
+        </div>
+        <div class="cross-container bottom-left">
+            <div class="cross" id="cross3">+</div>
+            {% if error_show %}
+            <div class="error-circle" style="width: {{ error_radius }}px; height: {{ error_radius }}px;"></div>
+            {% endif %}
+        </div>
+        <div class="cross-container bottom-right">
+            <div class="cross" id="cross4">+</div>
+            {% if error_show %}
+            <div class="error-circle" style="width: {{ error_radius }}px; height: {{ error_radius }}px;"></div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="text-center mt-4">
+        <small>follow the blue cross</small>
+        <button class="otree-btn-next btn btn-primary" style="display: none;">Next</button>
+    </div>
+</div>
+{{ endblock }}
+
+{{ block styles }}
+<style>
+    body {
+        overflow: hidden;
+        margin: 0;
+        padding: 0;
+    }
+
+    .container {
+        width: 100vw;
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .calibration-container {
+        position: relative;
+        width: 800px;  /* Fixed width */
+        height: 600px;  /* Fixed height */
+        background-color: white;
+    }
+
+    .cross-container {
+        position: absolute;
+        width: 60px;  /* Match font size */
+        height: 60px; /* Match font size */
+    }
+
+    .cross {
+        position: absolute;
+        left: 50%;
+        top: 42.5%;  /* Changed from 50% to 45% to move up */
+        transform: translate(-50%, 0);  /* Only horizontal centering */
+        font-size: 60px;
+        font-weight: bold;
+        color: #dee2e6;
+        transition: color 0.3s;
+        cursor: default;
+        user-select: none;
+        line-height: 0;
+    }
+
+    .cross.active {
+        color: #0d6efd;
+    }
+
+    .top-left {
+        top: 0;
+        left: 0;
+    }
+
+    .top-right {
+        top: 0;
+        right: 0;
+    }
+
+    .bottom-left {
+        bottom: 0;
+        left: 0;
+    }
+
+    .bottom-right {
+        bottom: 0;
+        right: 0;
+    }
+
+    small {
+        font-size: 20px;
+        color: #6c757d;
+        position: absolute;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+
+    .error-circle {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        border: 2px solid #f8f9fa;
+        border-radius: 50%;
+        pointer-events: none;
+    }
+
+    /* Position containers at corners */
+    .cross-container.top-left {
+        top: 100px;
+        left: 100px;
+    }
+
+    .cross-container.top-right {
+        top: 100px;
+        right: 100px;
+    }
+
+    .cross-container.bottom-left {
+        bottom: 100px;
+        left: 100px;
+    }
+
+    .cross-container.bottom-right {
+        bottom: 100px;
+        right: 100px;
+    }
+</style>
+{{ endblock }}
+
+{{ block scripts }}
+<script>
+    const crosses = ['cross1', 'cross2', 'cross3', 'cross4'];
+    let currentIndex = 0;
+    const INTERVAL_TIME = 3000;  // 3 seconds
+    const TOTAL_TIME = INTERVAL_TIME * crosses.length;
+    
+    function activateNextCross() {
+        // Remove active class from all crosses
+        crosses.forEach(id => {
+            document.getElementById(id).classList.remove('active');
+        });
+        
+        // Add active class to current cross
+        document.getElementById(crosses[currentIndex]).classList.add('active');
+        
+        // Move to next cross
+        currentIndex = (currentIndex + 1) % crosses.length;
+
+        // If we've shown all crosses, move to next page
+        if (currentIndex === 0) {
+            setTimeout(() => {
+                document.querySelector('.otree-btn-next').click();
+            }, INTERVAL_TIME);
+        }
+    }
+
+    // Start calibration
+    activateNextCross();
+    const interval = setInterval(activateNextCross, INTERVAL_TIME);
+
+    // Prevent keyboard navigation
+    document.addEventListener('keydown', function(event) {
+        event.preventDefault();
+    });
+</script>
+{{ endblock }} 

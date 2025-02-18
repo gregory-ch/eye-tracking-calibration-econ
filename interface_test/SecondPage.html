@@ -1,0 +1,249 @@
+{{ block title }}
+Press ↓ for info
+{{ endblock }}
+
+{{ block content }}
+{% include "interface_test/Instructions.html" %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="grid-container mb-4">
+                {% for cell in cells %}
+                    {% if cell.is_input %}
+                    <div class="grid-cell input-cell">
+                        <div class="previous-value">
+                            <span>{{ player.first_number }}</span>
+                        </div>
+                        <input type="number" 
+                               class="form-control" 
+                               id="id_second_number" 
+                               name="second_number" 
+                               min="1" 
+                               max="100" 
+                               value="{{ default_value }}"
+                               readonly
+                               required>
+                    </div>
+                    {% elif cell.is_reserved %}
+                    <div class="grid-cell reserved">
+                        <div class="signal-ball {% if cell.signal == 1 %}red{% else %}blue{% endif %}"></div>
+                    </div>
+                    {% else %}
+                    <div class="grid-cell">
+                        {% if cell.number %}<span class="round-number">{{ cell.number }}</span>{% endif %}
+                        <span class="value-number">{{ cell.value }}</span>
+                    </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{{ endblock }}
+
+{{ block styles }}
+<style>
+    .container {
+        max-width: 1400px;
+    }
+
+    .grid-container {
+        display: grid;
+        grid-template-columns: repeat(4, 150px);
+        gap: 100px;
+        padding: 100px;
+        background: #f8f9fa;
+        border-radius: 16px;
+        margin: 60px auto;
+        justify-content: center;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    }
+
+    .grid-cell {
+        position: relative;
+        width: 150px;
+        height: 150px;
+        background: white;
+        border: 2px solid #dee2e6;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        padding-top: 0;
+    }
+
+    .round-number {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        font-size: 14px;
+        color: #6c757d;
+    }
+
+    .value-number {
+        position: absolute;
+        bottom: 10px;
+        right: 10px;
+        font-size: 18px;
+        font-weight: bold;
+        color: #343a40;
+        min-width: 20px;
+        text-align: right;
+    }
+
+    .previous-value {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        font-size: 14px;
+        color: #6c757d;
+    }
+
+    .input-cell input.form-control {
+        position: absolute;
+        bottom: 10px;
+        right: 10px;
+        width: 80px;
+        text-align: right;
+        font-size: 18px;
+        font-weight: bold;
+        cursor: default;
+        user-select: none;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        background-color: #d4edda !important;
+        border-color: #c3e6cb !important;
+    }
+
+    .input-cell input::-webkit-outer-spin-button,
+    .input-cell input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+    
+    .input-cell input[type=number] {
+        -moz-appearance: textfield;
+    }
+
+    .reserved {
+        background: #e9ecef;
+    }
+
+    .signal-ball {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+    }
+
+    .signal-ball.red {
+        background-color: #dc3545;  /* Bootstrap red */
+    }
+
+    .signal-ball.blue {
+        background-color: #0d6efd;  /* Bootstrap blue */
+    }
+
+    .instructions-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.7);
+        z-index: 1000;
+    }
+
+    .instructions-content {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: white;
+        padding: 30px;
+        border-radius: 10px;
+        max-width: 600px;
+        width: 90%;
+        max-height: 90vh;
+        overflow-y: auto;
+    }
+
+    .instructions-overlay.show {
+        display: block;
+    }
+</style>
+{{ endblock }}
+
+{{ block scripts }}
+<script>
+    const input = document.getElementById('id_second_number');
+    const instructions = document.querySelector('.instructions-overlay');
+    
+    let interval = null;
+    let step = 1;
+    const maxStep = 10;
+    const stepIncrement = 0.5;
+    const intervalTime = 50;
+
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'Enter') {
+            const value = parseInt(input.value);
+            if (value >= 1 && value <= 100) {
+                document.getElementById('form').submit();
+            }
+            event.preventDefault();
+        } else if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
+            if (!interval) {
+                step = 1;
+                changeValue(event.key === 'ArrowRight' ? 1 : -1);
+                interval = setInterval(() => {
+                    step = Math.min(step + stepIncrement, maxStep);
+                    changeValue(event.key === 'ArrowRight' ? 1 : -1);
+                }, intervalTime);
+            }
+            event.preventDefault();
+        } else if (event.key === 'ArrowDown') {
+            instructions.classList.add('show');
+            event.preventDefault();
+        }
+        else {
+            event.preventDefault();
+        }
+    });
+
+    document.addEventListener('keyup', function(event) {
+        if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
+            if (interval) {
+                clearInterval(interval);
+                interval = null;
+            }
+        } else if (event.key === 'ArrowDown') {
+            instructions.classList.remove('show');
+        }
+    });
+
+    function changeValue(direction) {
+        let currentValue = parseInt(input.value);
+        let newValue = currentValue + (direction * Math.floor(step));
+        
+        newValue = Math.max(1, Math.min(100, newValue));
+        
+        input.value = newValue;
+    }
+
+    input.addEventListener('mousedown', function(event) {
+        event.preventDefault();
+    });
+
+    input.addEventListener('contextmenu', function(event) {
+        event.preventDefault();
+    });
+
+    input.focus();
+</script>
+{{ endblock }}
+
+
