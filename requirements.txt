@@ -3,5 +3,6 @@
 # otherwise, oTree will automatically overwrite it.
 otree==5.10.3
 psycopg2-binary==2.9.5
+numpy
 
 # Add other dependencies if needed
