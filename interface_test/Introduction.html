@@ -11,10 +11,28 @@ Welcome
                     <h4 class="card-title mb-4">Game Instructions</h4>
 
                     <h5 class="mb-3">Game Structure</h5>
+                    <p>In this game, the asset value can be either 0 or 100. You will see decisions made by previous robots who were following the same rules and had their own signals.</p>
+                    
                     <p>The game consists of two screens:</p>
                     <ul>
                         <li>First screen: Shows history of previous decisions</li>
                         <li>Second screen: Shows the same history plus a signal (red or blue ball)</li>
+                    </ul>
+
+                    <h5 class="mb-3">Signal Distribution</h5>
+                    <ul>
+                        <li>If asset value is 100:
+                            <ul>
+                                <li>70% chance of red ball</li>
+                                <li>30% chance of blue ball</li>
+                            </ul>
+                        </li>
+                        <li>If asset value is 0:
+                            <ul>
+                                <li>30% chance of red ball</li>
+                                <li>70% chance of blue ball</li>
+                            </ul>
+                        </li>
                     </ul>
 
                     <h5 class="mb-3">Controls</h5>
@@ -23,6 +41,7 @@ Welcome
                         <li>Hold arrows for faster adjustment</li>
                         <li>Press Enter to confirm your decision</li>
                         <li>Hold ↓ to view detailed instructions at any time</li>
+                        <li>Press ↑ to reveal your signal ball on the second screen</li>
                     </ul>
 
                     <h5 class="mb-3">Decision Process</h5>
@@ -30,8 +49,8 @@ Welcome
                         <li>Make your first decision based on the history</li>
                         <li>On the second screen, you'll see:
                             <ul>
-                                <li>Your first decision (top-left corner)</li>
-                                <li>A signal ball (last cell)</li>
+                                <li>Your first decision (top-right corner)</li>
+                                <li>A signal ball (in the reserved cell)</li>
                                 <li>You can make your final decision</li>
                             </ul>
                         </li>

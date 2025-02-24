@@ -1,43 +1,46 @@
 {{ block title }}
-Press ↓ for info
+Hold ↓ for info
 {{ endblock }}
 
 {{ block content }}
 {% include "interface_test/Instructions.html" %}
 <div class="container">
-    <div class="row justify-content-center">
-        <div class="col-md-10">
-            <div class="grid-container mb-4">
-                {% for cell in cells %}
-                    {% if cell.is_input %}
-                    <div class="grid-cell input-cell">
-                        <div class="arrows">
-                            <span class="arrow left">←</span>
-                            <span class="arrow right">→</span>
+    <!-- Add form wrapper -->
+    <form id="form">
+        <div class="row justify-content-center">
+            <div class="col-md-10">
+                <div class="grid-container mb-4">
+                    {% for cell in cells %}
+                        {% if cell.is_input %}
+                        <div class="grid-cell input-cell">
+                            <div class="arrows">
+                                <span class="arrow left">←</span>
+                                <span class="arrow right">→</span>
+                            </div>
+                            <input type="number" 
+                                   class="form-control" 
+                                   id="id_first_number" 
+                                   name="first_number" 
+                                   min="1" 
+                                   max="100" 
+                                   value="{{ default_value }}"
+                                   readonly
+                                   required>
                         </div>
-                        <input type="number" 
-                               class="form-control" 
-                               id="id_first_number" 
-                               name="first_number" 
-                               min="1" 
-                               max="100" 
-                               value="{{ default_value }}"
-                               readonly
-                               required>
-                    </div>
-                    {% elif cell.is_reserved %}
-                    <div class="grid-cell reserved">
-                    </div>
-                    {% else %}
-                    <div class="grid-cell">
-                        {% if cell.number %}<span class="round-number">{{ cell.number }}</span>{% endif %}
-                        <span class="value-number">{{ cell.value }}</span>
-                    </div>
-                    {% endif %}
-                {% endfor %}
+                        {% elif cell.is_reserved %}
+                        <div class="grid-cell reserved">
+                        </div>
+                        {% else %}
+                        <div class="grid-cell">
+                            {% if cell.number %}<span class="round-number">{{ cell.number }}</span>{% endif %}
+                            <span class="value-number">{{ cell.value }}</span>
+                        </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
             </div>
         </div>
-    </div>
+    </form>
 </div>
 {{ endblock }}
 
@@ -196,14 +199,14 @@ Press ↓ for info
     
     let interval = null;
     let step = 1;
-    const maxStep = 10;
-    const stepIncrement = 0.5;
-    const intervalTime = 50;
+    const maxStep = 5;
+    const stepIncrement = 0.2;
+    const intervalTime = 100;
 
     document.addEventListener('keydown', function(event) {
         if (event.key === 'Enter') {
             const value = parseInt(input.value);
-            if (value >= 1 && value <= 100) {
+            if (value >= 0 && value <= 100) {
                 document.getElementById('form').submit();
             }
             event.preventDefault();
@@ -241,7 +244,7 @@ Press ↓ for info
         let currentValue = parseInt(input.value);
         let newValue = currentValue + (direction * Math.floor(step));
         
-        newValue = Math.max(1, Math.min(100, newValue));
+        newValue = Math.max(0, Math.min(100, newValue));
         
         input.value = newValue;
     }

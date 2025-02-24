@@ -1,0 +1,53 @@
+{{ block title }}
+Round {{ current_round }} Results
+{{ endblock }}
+
+{{ block content }}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card mt-5">
+                <div class="card-body">
+                    <h4 class="card-title mb-4">Results Summary</h4>
+                    
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Round</th>
+                                <th>True Value</th>
+                                <th>First Guess</th>
+                                <th>Final Guess</th>
+                                <th>Error</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for round in rounds_data %}
+                            <tr {% if round.round_number == current_round %}class="table-active"{% endif %}>
+                                <td>{{ round.round_number }}</td>
+                                <td>{{ round.asset_value }}</td>
+                                <td>{{ round.first_guess }}</td>
+                                <td>{{ round.second_guess }}</td>
+                                <td>{{ round.error }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+
+                    {% if current_round == Constants.num_rounds %}
+                    <div class="alert alert-info mt-4">
+                        This was the last round. Thank you for participating!
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .table-active {
+        background-color: #f8f9fa;
+        font-weight: bold;
+    }
+</style>
+{{ endblock }}

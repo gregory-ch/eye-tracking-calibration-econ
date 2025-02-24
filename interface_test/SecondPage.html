@@ -1,48 +1,90 @@
 {{ block title }}
-Press ↓ for info
+
 {{ endblock }}
 
 {{ block content }}
 {% include "interface_test/Instructions.html" %}
+<div class="header-container">
+    <div class="left-header">Hold ↓ for info</div>
+    <div class="right-header">Previous answer: {{ player.first_number }}</div>
+</div>
 <div class="container">
-    <div class="row justify-content-center">
-        <div class="col-md-10">
-            <div class="grid-container mb-4">
-                {% for cell in cells %}
-                    {% if cell.is_input %}
-                    <div class="grid-cell input-cell">
-                        <div class="previous-value">
-                            <span>{{ player.first_number }}</span>
+    <form id="form">
+        <div class="row justify-content-center">
+            <div class="col-md-10">
+                <div class="grid-container mb-4">
+                    {% for cell in cells %}
+                        {% if cell.is_input %}
+                        <div class="grid-cell input-cell">
+                            <div class="arrows">
+                                <span class="arrow left">←</span>
+                                <span class="arrow right">→</span>
+                            </div>
+                            <input type="number" 
+                                   class="form-control" 
+                                   id="id_second_number" 
+                                   name="second_number" 
+                                   min="1" 
+                                   max="100" 
+                                   value="{{ default_value }}"
+                                   readonly
+                                   required>
                         </div>
-                        <input type="number" 
-                               class="form-control" 
-                               id="id_second_number" 
-                               name="second_number" 
-                               min="1" 
-                               max="100" 
-                               value="{{ default_value }}"
-                               readonly
-                               required>
-                    </div>
-                    {% elif cell.is_reserved %}
-                    <div class="grid-cell reserved">
-                        <div class="signal-ball {% if cell.signal == 1 %}red{% else %}blue{% endif %}"></div>
-                    </div>
-                    {% else %}
-                    <div class="grid-cell">
-                        {% if cell.number %}<span class="round-number">{{ cell.number }}</span>{% endif %}
-                        <span class="value-number">{{ cell.value }}</span>
-                    </div>
-                    {% endif %}
-                {% endfor %}
+                        {% elif cell.is_reserved %}
+                        <div class="grid-cell reserved">
+                            <div class="up-arrow">↑</div>
+                            <div class="signal-ball {% if cell.signal == 1 %}red{% else %}blue{% endif %} hidden"></div>
+                        </div>
+                        {% else %}
+                        <div class="grid-cell">
+                            {% if cell.number %}<span class="round-number">{{ cell.number }}</span>{% endif %}
+                            <span class="value-number">{{ cell.value }}</span>
+                        </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
             </div>
         </div>
-    </div>
+    </form>
 </div>
 {{ endblock }}
 
 {{ block styles }}
 <style>
+    .header-container {
+        display: flex;
+        justify-content: space-between;
+        padding: 20px 100px;
+        align-items: center;
+        font-size: 16px;
+        color: #6c757d;
+    }
+
+    .left-header, .right-header {
+        flex: 1;
+    }
+
+    .left-header {
+        text-align: left;
+    }
+
+    .right-header {
+        text-align: right;
+    }
+
+    .arrows {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        display: flex;
+        gap: 5px;
+        color: #6c757d;
+    }
+
+    .arrow {
+        font-size: 14px;
+    }
+
     .container {
         max-width: 1400px;
     }
@@ -128,6 +170,14 @@ Press ↓ for info
         background: #e9ecef;
     }
 
+    .up-arrow {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        color: #6c757d;
+        font-size: 14px;
+    }
+
     .signal-ball {
         position: absolute;
         top: 50%;
@@ -139,11 +189,15 @@ Press ↓ for info
     }
 
     .signal-ball.red {
-        background-color: #dc3545;  /* Bootstrap red */
+        background-color: #dc3545;
     }
 
     .signal-ball.blue {
-        background-color: #0d6efd;  /* Bootstrap blue */
+        background-color: #0d6efd;
+    }
+
+    .hidden {
+        display: none;
     }
 
     .instructions-overlay {
@@ -184,14 +238,14 @@ Press ↓ for info
     
     let interval = null;
     let step = 1;
-    const maxStep = 10;
-    const stepIncrement = 0.5;
-    const intervalTime = 50;
+    const maxStep = 5;
+    const stepIncrement = 0.2;
+    const intervalTime = 100;
 
     document.addEventListener('keydown', function(event) {
         if (event.key === 'Enter') {
             const value = parseInt(input.value);
-            if (value >= 1 && value <= 100) {
+            if (value >= 0 && value <= 100) {
                 document.getElementById('form').submit();
             }
             event.preventDefault();
@@ -207,6 +261,10 @@ Press ↓ for info
             event.preventDefault();
         } else if (event.key === 'ArrowDown') {
             instructions.classList.add('show');
+            event.preventDefault();
+        } else if (event.key === 'ArrowUp') {
+            const signalBall = document.querySelector('.signal-ball');
+            signalBall.classList.remove('hidden');
             event.preventDefault();
         }
         else {
@@ -229,7 +287,7 @@ Press ↓ for info
         let currentValue = parseInt(input.value);
         let newValue = currentValue + (direction * Math.floor(step));
         
-        newValue = Math.max(1, Math.min(100, newValue));
+        newValue = Math.max(0, Math.min(100, newValue));
         
         input.value = newValue;
     }
