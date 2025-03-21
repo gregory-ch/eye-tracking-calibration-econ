@@ -1,5 +1,6 @@
 from otree.api import *
 import random
+from utils.weblink import WebLinkConnection, start_recording, stop_recording, calibrate, drift_check, send_trial_message
 
 
 doc = """
@@ -98,6 +99,11 @@ class Constants(BaseConstants):
         'nash': "Your opponent follows Nash strategy"
     }
 
+    # WebLink settings
+    WEBLINK_HOST = '10.1.1.2'  # Default for local testing
+    WEBLINK_PORT = 50700         # Default port
+    WEBLINK_USE_TCP = True      # Use TCP by default
+
     @staticmethod
     def calculate_ppd(resolution, width, distance):
         """Calculate Pixels Per Degree"""
@@ -148,6 +154,72 @@ class Player(BasePlayer):
     )
     decision_time = models.FloatField(doc="Decision time in seconds")
     opponent_type = models.StringField(doc="Type of opponent strategy")
+
+    def live_help_clicked(self, data):
+        """Handle help button click and send message to WebLink"""
+        if data.get('action') == 'help_clicked':
+            # Get test mode setting from config
+            test_mode = self.session.config.get('weblink_test_mode', False)
+            
+            # Get WebLink settings
+            host = self.session.config.get('weblink_host', Constants.WEBLINK_HOST)
+            port = self.session.config.get('weblink_port', Constants.WEBLINK_PORT)
+            use_tcp = self.session.config.get('weblink_use_tcp', Constants.WEBLINK_USE_TCP)
+            
+            # Format message in standard EDF format
+            message = f"HELP_BUTTON_CLICKED ROUND={self.round_number} TIME={data.get('timestamp', 0)}"
+            
+            # In test mode, just log the message
+            if test_mode:
+                print(f"TEST MODE: Would send message to WebLink: {message}")
+                return {self.id_in_group: {'status': 'success', 'test_mode': True}}
+            
+            # Real mode - try to send message to WebLink
+            try:
+                # Create WebLink connection with timeout
+                weblink = WebLinkConnection(
+                    host=host,
+                    port=port,
+                    use_tcp=use_tcp,
+                    timeout=2.0  # 2 second timeout
+                )
+                
+                # Send the message
+                weblink.send_message(message)
+                weblink.disconnect()
+                
+                return {self.id_in_group: {'status': 'success'}}
+            except ConnectionError as e:
+                error_msg = f"WebLink connection error: {e}"
+                print(error_msg)
+                return {self.id_in_group: {
+                    'status': 'error', 
+                    'message': error_msg,
+                    'connection_error': True
+                }}
+            except Exception as e:
+                error_msg = f"Failed to send WebLink message: {e}"
+                print(error_msg)
+                return {self.id_in_group: {'status': 'error', 'message': error_msg}}
+                
+    def live_test_connection(self, data):
+        """Test connection to WebLink without sending messages"""
+        if data.get('action') == 'test_connection':
+            # Get WebLink settings
+            host = self.session.config.get('weblink_host', Constants.WEBLINK_HOST)
+            port = self.session.config.get('weblink_port', Constants.WEBLINK_PORT)
+            use_tcp = self.session.config.get('weblink_use_tcp', Constants.WEBLINK_USE_TCP)
+            
+            # Test connection
+            result = WebLinkConnection.test_connection(
+                host=host,
+                port=port,
+                use_tcp=use_tcp,
+                timeout=2.0
+            )
+            
+            print(f"WebLink connection test result: {result}")
+            return {self.id_in_group: {'status': 'test_result', 'result': result}}
 
 
 class MyBot(ExtraModel):
@@ -231,15 +303,39 @@ class Decision(Page):
     def vars_for_template(player: Player):
         bot = MyBot.filter(player=player)[0]
         matrix_index = (player.round_number - 1) % len(Constants.matrix_types)
+        
+        # Get WebLink settings for template
+        weblink_settings = {
+            'host': player.session.config.get('weblink_host', Constants.WEBLINK_HOST),
+            'port': player.session.config.get('weblink_port', Constants.WEBLINK_PORT),
+            'protocol': 'TCP' if player.session.config.get('weblink_use_tcp', Constants.WEBLINK_USE_TCP) else 'UDP',
+            'test_mode': player.session.config.get('weblink_test_mode', False)
+        }
+        
         return {
             'matrix': get_current_matrix(player),
             'matrix_type': Constants.matrix_types[matrix_index],
-            'opponent_strategy': bot.strategy
+            'opponent_strategy': bot.strategy,
+            'weblink_settings': weblink_settings
         }
     
     @staticmethod
     def before_next_page(player: Player, timeout_happened):
         set_bot_choice(player)
+
+    @staticmethod
+    def js_vars(player: Player):
+        return {
+            'live_method': 'help_clicked'
+        }
+    
+    @staticmethod
+    def live_method(player: Player, data):
+        if data.get('action') == 'help_clicked':
+            return player.live_help_clicked(data)
+        elif data.get('action') == 'test_connection':
+            return player.live_test_connection(data)
+        return {player.id_in_group: {'status': 'error', 'message': 'Unknown action'}}
 
 
 class Results(Page):

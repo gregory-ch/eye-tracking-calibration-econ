@@ -5,22 +5,28 @@ SESSION_CONFIGS = [
         name='benchmark',
         display_name="Matrix Game Benchmark",
         app_sequence=['benchmark'],
-        num_demo_participants=2,
-        # Calibration settings
-        error_show=True,
+        num_demo_participants=1,
+        # Eye tracking settings
         screen_resolution=1920,
-        screen_width=531,
-        eye_distance=700,
+        screen_width=531,  # in mm
+        eye_distance=700,  # in mm
+        error_show=True,
+        # WebLink settings
+        weblink_host='10.1.1.2',
+        weblink_port=50700,
+        weblink_use_tcp=True,
+        weblink_test_mode=True  # Set to False in production
     ),
     dict(
         name='interface_test',
         display_name='Interface Test',
         app_sequence=['interface_test'],
         num_demo_participants=1,
-        error_show=True,
+        # Eye tracking settings
         screen_resolution=1920,
-        screen_width=531,
-        eye_distance=700,
+        screen_width=531,  # in mm
+        eye_distance=700,  # in mm
+        error_show=True
     ),
 ]
 
@@ -54,16 +60,16 @@ SESSION_FIELDS = []
 LANGUAGE_CODE = 'en'
 
 # e.g. EUR, GBP, CNY, JPY
-REAL_WORLD_CURRENCY_CODE = 'GBP'
+REAL_WORLD_CURRENCY_CODE = 'USD'
 USE_POINTS = True
 
 ADMIN_USERNAME = 'admin'
 # for security, best to set admin password in an environment variable
-ADMIN_PASSWORD = environ.get('OTREE_ADMIN_PASSWORD', 'password')
+ADMIN_PASSWORD = environ.get('OTREE_ADMIN_PASSWORD')
 
 DEMO_PAGE_INTRO_HTML = """ """
 
-SECRET_KEY = '{{ secret_key }}'
+SECRET_KEY = '1234567890123456789012345678901234567890'
 
 # if an app is included in SESSION_CONFIGS, you don't need to list it here
 INSTALLED_APPS = ['otree']

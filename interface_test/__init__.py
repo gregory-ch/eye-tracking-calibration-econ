@@ -143,49 +143,6 @@ class MyBot(ExtraModel):
     agent_id = models.IntegerField()
 
 
-# def set_bot_choice(player: Player):
-#     bot = MyBot.filter(player=player)[0]
-#     current_matrix = get_current_matrix(player)
-#     # Use same modulo logic for matrix type
-#     matrix_index = (player.round_number - 1) % len(Constants.matrix_types)
-#     matrix_type = Constants.matrix_types[matrix_index]
-    
-#     # Get strategy from bot and save to player
-#     strategy_type = bot.strategy
-#     player.opponent_type = strategy_type  # Save strategy type
-    
-#     # Select row based on strategy
-#     possible_rows = [
-#         row for row, strat in Constants.matrix_strategies[matrix_type].items()
-#         if strat == strategy_type
-#     ]
-#     bot.row = possible_rows[0] if possible_rows else random.choice(['I', 'II', 'III'])
-    
-#     # Calculate payoffs
-#     player.payoff = current_matrix[bot.row][player.column]['col']
-
-
-# def get_current_matrix(player: Player):
-#     # Use modulo to cycle through matrices
-#     matrix_index = (player.round_number - 1) % len(Constants.matrix_types)
-#     matrix_type = Constants.matrix_types[matrix_index]
-    
-#     if matrix_type == 'matrix_1':
-#         return Constants.matrix_1
-#     elif matrix_type == 'matrix_2':
-#         return Constants.matrix_2
-#     return Constants.matrix_3
-
-
-# class Cell:
-#     def __init__(self, number='', value=None, is_input=False, is_reserved=False, signal=None):
-#         self.number = number
-#         self.value = value if value is not None else "—"
-#         self.is_input = is_input
-#         self.is_reserved = is_reserved
-#         self.signal = signal
-
-
 # PAGES
 class Introduction(Page):
     @staticmethod

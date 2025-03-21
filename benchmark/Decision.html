@@ -1,18 +1,86 @@
 {{ block title }}
+    Decision
 {{ endblock }}
 
 {{ block content }}
 
 <div class="container">
-    <!-- Hidden inputs -->
-    <form id="form">
+    <!-- WebLink panel -->
+    <div class="row mb-4">
+        <div class="col">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <span>WebLink Status</span>
+                    <div>
+                        <button type="button" class="btn btn-sm btn-outline-info" id="weblink-info-button" data-bs-toggle="collapse" data-bs-target="#weblink-info">
+                            <i class="bi bi-info-circle"></i> Info
+                        </button>
+                        <button type="button" class="btn btn-sm btn-outline-primary" id="test-connection-button">
+                            <i class="bi bi-wifi"></i> Test Connection
+                        </button>
+                    </div>
+                </div>
+                <div class="collapse" id="weblink-info">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6>WebLink Settings:</h6>
+                                <ul class="list-unstyled">
+                                    <li><strong>Host:</strong> {{ weblink_settings.host }}</li>
+                                    <li><strong>Port:</strong> {{ weblink_settings.port }}</li>
+                                    <li><strong>Protocol:</strong> {{ weblink_settings.protocol }}</li>
+                                    <li><strong>Test Mode:</strong> {{ weblink_settings.test_mode }}</li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="alert alert-info mb-0">
+                                    <h6>WebLink Connection Tips:</h6>
+                                    <ol class="small">
+                                        <li>Make sure WebLink experiment is running</li>
+                                        <li>Enable "Listen for External {{ weblink_settings.protocol }} Messages" in WebLink</li>
+                                        <li>Add Windows Firewall exception for port {{ weblink_settings.port }}</li>
+                                        <li>Check network connectivity between computers</li>
+                                    </ol>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer" id="weblink-status">
+                    <span class="badge bg-secondary">Unknown</span> Click "Test Connection" to check WebLink status
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Help button -->
+    <div class="row justify-content-end mb-3">
+        <div class="col-auto">
+            <button type="button" class="btn btn-outline-info" id="help-button">
+                <i class="bi bi-question-circle"></i> Help
+            </button>
+        </div>
+    </div>
+
+    <!-- Form with proper action -->
+    <form id="form" method="post">
         <input type="hidden" name="column" id="id_column">
         <input type="hidden" name="decision_time" id="id_decision_time">
+        <!-- oTree handles CSRF protection automatically -->
     </form>
 
     <div class="row justify-content-center" style="margin-bottom: 60px;">
         <div class="col text-center">
             <small>column ← ↓ → | enter to submit</small>
+        </div>
+    </div>
+
+    <!-- Manual submit button for testing -->
+    <div class="row justify-content-center mb-4">
+        <div class="col-auto">
+            <button type="button" class="btn btn-primary" id="submit-button" disabled>
+                Submit
+            </button>
         </div>
     </div>
 
@@ -83,8 +151,11 @@
 
 {{ block styles }}
 <style>
+    /* Add Bootstrap Icons */
+    @import url("https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css");
+    
     .container {
-        margin-top: 80px;
+        margin-top: 30px;
         max-width: 1000px;
     }
 
@@ -164,7 +235,62 @@
     let startTime = performance.now();
     let selectedColumn = null;
     const columns = ['left', 'middle', 'right'];
+    
+    console.log("Decision page script loaded");
 
+    // Function to show toast notification
+    function showToast(message, isError = false) {
+        // Create toast container if not exists
+        let toastContainer = document.getElementById('toast-container');
+        if (!toastContainer) {
+            toastContainer = document.createElement('div');
+            toastContainer.id = 'toast-container';
+            toastContainer.style.position = 'fixed';
+            toastContainer.style.top = '20px';
+            toastContainer.style.right = '20px';
+            toastContainer.style.zIndex = '1050';
+            document.body.appendChild(toastContainer);
+        }
+        
+        // Create toast
+        const toast = document.createElement('div');
+        toast.className = `toast ${isError ? 'bg-danger' : 'bg-success'} text-white`;
+        toast.style.minWidth = '250px';
+        toast.innerHTML = `
+            <div class="toast-header ${isError ? 'bg-danger' : 'bg-success'} text-white">
+                <strong class="me-auto">${isError ? 'Error' : 'Success'}</strong>
+                <button type="button" class="btn-close text-white" data-bs-dismiss="toast"></button>
+            </div>
+            <div class="toast-body">${message}</div>
+        `;
+        
+        toastContainer.appendChild(toast);
+        
+        // Show toast for 5 seconds
+        setTimeout(() => {
+            toast.remove();
+        }, 5000);
+    }
+    
+    // Function to update WebLink status
+    function updateWeblinkStatus(result) {
+        const statusElement = document.getElementById('weblink-status');
+        if (result.success) {
+            statusElement.innerHTML = `
+                <span class="badge bg-success">Connected</span> 
+                WebLink is reachable at ${result.host}:${result.port} via ${result.protocol}
+            `;
+            if (result.warning) {
+                statusElement.innerHTML += `<div class="mt-1 text-warning small">${result.warning}</div>`;
+            }
+        } else {
+            statusElement.innerHTML = `
+                <span class="badge bg-danger">Not Connected</span> 
+                ${result.error || "Could not connect to WebLink"}
+            `;
+        }
+    }
+    
     function selectColumn(column) {
         // Remove previous selection
         document.querySelectorAll('.matrix-cell').forEach(cell => {
@@ -182,9 +308,112 @@
             ((performance.now() - startTime) / 1000).toFixed(3);
 
         selectedColumn = column;
+        console.log("Selected column:", column);
+        
+        // Enable submit button
+        document.getElementById('submit-button').disabled = false;
     }
+    
+    function submitForm() {
+        if (selectedColumn) {
+            console.log("Submitting form with column:", selectedColumn);
+            try {
+                document.getElementById('form').submit();
+            } catch (e) {
+                console.error("Error submitting form:", e);
+            }
+        } else {
+            console.log("No column selected yet");
+        }
+    }
+    
+    document.addEventListener('DOMContentLoaded', function() {
+        // Add handlers for WebLink test button
+        const testConnectionButton = document.getElementById('test-connection-button');
+        if (testConnectionButton) {
+            testConnectionButton.addEventListener('click', function() {
+                testConnectionButton.disabled = true;
+                testConnectionButton.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Testing...';
+                
+                liveSend({
+                    'action': 'test_connection'
+                });
+            });
+        }
+        
+        // Add click handlers to matrix cells
+        document.querySelectorAll('.matrix-cell').forEach(cell => {
+            cell.addEventListener('click', function() {
+                const column = this.getAttribute('data-col');
+                selectColumn(column);
+            });
+        });
+        
+        // Add click handler to submit button
+        document.getElementById('submit-button').addEventListener('click', submitForm);
+        
+        // Add help button click handler
+        const helpButton = document.getElementById('help-button');
+        if (helpButton) {
+            helpButton.addEventListener('click', function() {
+                console.log("Help button clicked, sending message");
+                liveSend({
+                    'action': 'help_clicked',
+                    'timestamp': Date.now()
+                });
+            });
+        } else {
+            console.error("Help button not found");
+        }
+    });
 
+    // Handle messages from live_method
+    liveRecv(function(data) {
+        console.log("Received live data:", data);
+        
+        // Reset help button state
+        const helpButton = document.getElementById('help-button');
+        if (helpButton) {
+            helpButton.disabled = false;
+            helpButton.innerHTML = '<i class="bi bi-question-circle"></i> Help';
+        }
+        
+        // Reset test connection button state
+        const testConnectionButton = document.getElementById('test-connection-button');
+        if (testConnectionButton) {
+            testConnectionButton.disabled = false;
+            testConnectionButton.innerHTML = '<i class="bi bi-wifi"></i> Test Connection';
+        }
+        
+        // Handle response
+        if (data.status === 'success') {
+            if (data.test_mode) {
+                showToast("Test mode: Help message logged (not sent to WebLink)");
+            } else {
+                showToast("Help message sent successfully");
+            }
+        } else if (data.status === 'error') {
+            if (data.connection_error) {
+                showToast("WebLink connection error. Check if WebLink is running.", true);
+            } else {
+                showToast(data.message || "Error sending help message", true);
+            }
+        } else if (data.status === 'test_result') {
+            // Update WebLink status display
+            updateWeblinkStatus(data.result);
+            
+            if (data.result.success) {
+                showToast("WebLink connection successful!");
+            } else {
+                showToast(data.result.error || "WebLink connection failed", true);
+            }
+        }
+    });
+
+    // Handle keyboard navigation
     document.addEventListener('keydown', function(event) {
+        console.log("Key pressed:", event.key);
+        
         switch(event.key) {
             case 'ArrowLeft':
                 selectColumn('left');
@@ -196,9 +425,7 @@
                 selectColumn('middle');
                 break;
             case 'Enter':
-                if (selectedColumn) {
-                    document.getElementById('form').submit();
-                }
+                submitForm();
                 break;
         }
         event.preventDefault();  // Prevent page scrolling
